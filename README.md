@@ -11,7 +11,8 @@ This is a real-time collaborative whiteboard built using HTML5 Canvas and Socket
 
 ## 📸 Preview
 
-![Whiteboard Screenshot](screenshot.png) <!-- You can add your screenshot image file to the repo -->
+
+![Whiteboard Screenshot](![Screenshot 2025-04-29 163810](https://github.com/user-attachments/assets/ae2c7231-6297-4134-ab4c-b57a85ff64b3)) <!-- You can add your screenshot image file to the repo -->
 
 ## 🛠️ Tech Stack
 
