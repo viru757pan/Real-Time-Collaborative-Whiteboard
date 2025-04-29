@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collaborative Whiteboard</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        padding: 10px;
+      }
+
+      h1 {
+        color: #333;
+        margin: 5px;
+      }
+
+      #whiteboard {
+        border: 3px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        background: white;
+        width: 1200px;
+        height: 600px;
+        cursor: crosshair;
+      }
+
+      #clear {
+        padding: 10px 20px;
+        background-color: #ff4d4d;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      #clear:hover {
+        background-color: #e60000;
+        transform: scale(1.05);
+      }
+
+      #clear:active {
+        transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Real-Time Collaborative Whiteboard</h1>
+    <canvas id="whiteboard"></canvas>
+    <br />
+    <button id="clear">Clear Board</button>
+
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script>
+      const socket = io.connect("http://localhost:5000");
+
+      const canvas = document.getElementById("whiteboard");
+      const ctx = canvas.getContext("2d");
+      canvas.width = 800;
+      canvas.height = 600;
+
+      let drawing = false;
+
+      canvas.addEventListener("mousedown", (e) => {
+        drawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+      });
+
+      canvas.addEventListener("mousemove", (e) => {
+        if (!drawing) return;
+        const x = e.offsetX;
+        const y = e.offsetY;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        socket.emit("draw", { x, y });
+      });
+
+      canvas.addEventListener("mouseup", () => {
+        drawing = false;
+      });
+
+      socket.on("draw", (data) => {
+        ctx.lineTo(data.x, data.y);
+        ctx.stroke();
+      });
+
+      document.getElementById("clear").addEventListener("click", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        socket.emit("clear");
+      });
+
+      socket.on("clear", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
+    </script>
+  </body>
+</html>
